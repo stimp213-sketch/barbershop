@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLADE & STYLE — Мужская парикмахерская</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #111111; color: #f5f5f5; line-height: 1.6; }
+        header { background: #1a1a1a; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .logo { font-size: 24px; font-weight: bold; color: #d4af37; letter-spacing: 2px; }
+        .hero { text-align: center; padding: 90px 20px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://unsplash.com') center/cover; }
+        .hero h1 { font-size: 44px; margin-bottom: 15px; }
+        .hero p { font-size: 18px; color: #ccc; max-width: 600px; margin: 0 auto 30px; }
+        .btn { background: #d4af37; color: #111; padding: 14px 32px; text-decoration: none; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn:hover { background: #b59226; }
+        .btn:disabled { background: #666; cursor: not-allowed; }
+        .container { max-width: 1000px; margin: 60px auto; padding: 0 20px; }
+        h2 { text-align: center; font-size: 32px; margin-bottom: 40px; color: #d4af37; }
+        .services { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: #1c1c1c; padding: 25px; border-radius: 10px; border: 1px solid #2c2c2c; }
+        .card h3 { font-size: 20px; margin-bottom: 10px; }
+        .price { color: #d4af37; font-size: 22px; font-weight: bold; margin-top: 15px; }
+        .booking { background: #1a1a1a; padding: 40px; border-radius: 12px; max-width: 500px; margin: 60px auto; border: 1px solid #333; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0 20px; background: #111; border: 1px solid #444; color: #fff; border-radius: 6px; }
+        .success { display: none; background: #1e4620; color: #a3f7a8; padding: 15px; border-radius: 6px; margin-top: 15px; text-align: center; }
+        footer { text-align: center; padding: 30px; color: #666; border-top: 1px solid #222; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">BLADE & STYLE</div>
+    <div>г. Гродно, ул. Советская, 15 | Ежедневно 10:00–21:00</div>
+</header>
+
+<section class="hero">
+    <h1>Твой стиль — наша работа</h1>
+    <p>Классические мужские стрижки, оформление бороды и королевское бритьё от мастеров с опытом от 5 лет.</p>
+    <a href="#book" class="btn">Записаться онлайн</a>
+</section>
+
+<div class="container">
+    <h2>Услуги и цены</h2>
+    <div class="services">
+        <div class="card">
+            <h3>Мужская стрижка</h3>
+            <p>Мытьё головы, стрижка машинкой и ножницами, укладка премиальной косметикой.</p>
+            <div class="price">35 BYN</div>
+        </div>
+        <div class="card">
+            <h3>Моделирование бороды</h3>
+            <p>Придание формы, распаривание горячим полотенцем и бритьё опасной бритвой.</p>
+            <div class="price">25 BYN</div>
+        </div>
+        <div class="card">
+            <h3>Комплекс «Отец + Сын»</h3>
+            <p>Две полноценные стрижки у одного или двух мастеров одновременно.</p>
+            <div class="price">60 BYN</div>
+        </div>
+    </div>
+
+    <div class="booking" id="book">
+        <h2 style="margin-bottom: 20px;">Онлайн-запись</h2>
+        <form id="bookingForm">
+            <label>Ваше имя</label>
+            <input type="text" id="clientName" placeholder="Например, Алексей" required>
+
+            <label>Телефон</label>
+            <input type="tel" id="clientPhone" placeholder="+375 (29) 000-00-00" required>
+
+            <label>Выберите услугу</label>
+            <select id="serviceSelect">
+                <option>Мужская стрижка — 35 BYN</option>
+                <option>Моделирование бороды — 25 BYN</option>
+                <option>Комплекс «Отец + Сын» — 60 BYN</option>
+            </select>
+
+            <button type="submit" id="submitBtn" class="btn" style="width: 100%;">Подтвердить запись</button>
+        </form>
+        <div class="success" id="successMsg"></div>
+    </div>
+</div>
+
+<footer>
+    © 2026 Барбершоп BLADE & STYLE. Все права защищены.
+</footer>
+
+<script>
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('successMsg');
+        const name = document.getElementById('clientName').value;
+        const phone = document.getElementById('clientPhone').value;
+        const service = document.getElementById('serviceSelect').value;
+
+        btn.disabled = true;
+        btn.textContent = "Отправка...";
+
+        try {
+            const response = await fetch('/.netlify/functions/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, service })
+            });
+
+            if (response.ok) {
+                msg.style.display = 'block';
+                msg.textContent = `Спасибо, ${name}! Заявка отправлена, администратор скоро свяжется с вами.`;
+                this.reset();
+            } else {
+                alert('Сервер вернул ошибку. Проверь, нажал ли ты Start в боте.');
+            }
+        } catch (error) {
+            alert('Ошибка связи с сервером сайта.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Подтвердить запись";
+        }
+    });
+</script>
+
+</body>
+</html>
