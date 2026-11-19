@@ -65,17 +65,17 @@
         <form id="bookingForm">
             <label>Ваше имя</label>
             <input type="text" id="clientName" placeholder="Например, Алексей" required>
-
+            
             <label>Телефон</label>
             <input type="tel" id="clientPhone" placeholder="+375 (29) 000-00-00" required>
-
+            
             <label>Выберите услугу</label>
             <select id="serviceSelect">
                 <option>Мужская стрижка — 35 BYN</option>
                 <option>Моделирование бороды — 25 BYN</option>
                 <option>Комплекс «Отец + Сын» — 60 BYN</option>
             </select>
-
+            
             <button type="submit" id="submitBtn" class="btn" style="width: 100%;">Подтвердить запись</button>
         </form>
         <div class="success" id="successMsg"></div>
@@ -89,7 +89,7 @@
 <script>
     document.getElementById('bookingForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-
+        
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('successMsg');
         const name = document.getElementById('clientName').value;
@@ -111,7 +111,8 @@
                 msg.textContent = `Спасибо, ${name}! Заявка отправлена, администратор скоро свяжется с вами.`;
                 this.reset();
             } else {
-                alert('Сервер вернул ошибку. Проверь, нажал ли ты Start в боте.');
+                const errText = await response.text();
+                alert('Ошибка: ' + response.status + ' -> ' + errText);
             }
         } catch (error) {
             alert('Ошибка связи с сервером сайта.');
