@@ -1,3 +1,5 @@
+const https = require('https');
+
 exports.handler = async function(event) {
     const data = JSON.parse(event.body);
     const BOT_TOKEN = process.env.BOT_TOKEN;
@@ -8,16 +10,34 @@ exports.handler = async function(event) {
     }
 
     const text = `🔥 Новая заявка с сайта!\n\n👤 Имя: ${data.name}\n📞 Телефон: ${data.phone}\n✂️ Услуга: ${data.service}`;
+    const postData = JSON.stringify({ chat_id: CHAT_ID, text: text });
 
-    const response = await fetch(`https://telegram.org{BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+    return new Promise((resolve) => {
+        const req = https.request({
+            hostname: 'api.telegram.org',
+            path: `/bot${BOT_TOKEN}/sendMessage`,
+            method: 'POST',
+            family: 4,
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData)
+            }
+        }, (res) => {
+            let body = '';
+            res.on('data', chunk => body += chunk);
+            res.on('end', () => {
+                resolve({
+                    statusCode: res.statusCode === 200 ? 200 : 500,
+                    body: body
+                });
+            });
+        });
+
+        req.on('error', (err) => {
+            resolve({ statusCode: 500, body: err.message });
+        });
+
+        req.write(postData);
+        req.end();
     });
-
-    const result = await response.text();
-    return {
-        statusCode: response.ok ? 200 : 500,
-        body: result
-    };
 };
