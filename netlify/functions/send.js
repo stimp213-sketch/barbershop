@@ -1,6 +1,6 @@
 exports.handler = async function(event) {
     const data = JSON.parse(event.body);
-    const BOT_TOKEN = "8961105900:AAGyzBZKir3YhdM0_sk4QCK5zOnWeNIJBq4";
+    const BOT_TOKEN = process.env.BOT_TOKEN;
     const CHAT_ID = "1478428788";
 
     const text = `🔥 Новая заявка с сайта!\n\n👤 Имя: ${data.name}\n📞 Телефон: ${data.phone}\n✂️ Услуга: ${data.service}`;
